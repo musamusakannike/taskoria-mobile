@@ -7,7 +7,7 @@ import { NotificationSettings } from "@/components/NotificationSettings"
 import { useTasks } from "@/hooks/useTasks"
 import type { Task } from "@/types/task"
 import { useState, useEffect } from "react"
-import { View, StatusBar, Animated, Platform, TouchableOpacity } from "react-native"
+import { View, StatusBar, Animated, Platform, TouchableOpacity, Text } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { Ionicons } from "@expo/vector-icons"
 
@@ -65,7 +65,14 @@ export default function Index() {
       <SafeAreaView className="flex-1 bg-gray-50 dark:bg-gray-900">
         <Animated.View className="flex-1" style={{ opacity: fadeAnim }}>
           {/* Header with notification settings button */}
-          <View className="flex-row justify-end px-4 py-2">
+          <View className="flex-row justify-between items-center px-4 py-2 w-full">
+            {/* Header */}
+            <View className="pt-6 pb-4">
+              <Text className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Taskoria</Text>
+              <Text className="text-gray-600 dark:text-gray-400">
+                {tasks.length} {tasks.length === 1 ? "task" : "tasks"} total
+              </Text>
+            </View>
             <TouchableOpacity
               onPress={() => setNotificationSettingsVisible(true)}
               className="p-2 rounded-full bg-gray-100 dark:bg-gray-800"

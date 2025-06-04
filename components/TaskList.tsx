@@ -135,14 +135,6 @@ export function TaskList({
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#3B82F6" colors={["#3B82F6"]} />
         }
       >
-        {/* Header */}
-        <View className="pt-6 pb-4">
-          <Text className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Taskoria</Text>
-          <Text className="text-gray-600 dark:text-gray-400">
-            {tasks.length} {tasks.length === 1 ? "task" : "tasks"} total
-          </Text>
-        </View>
-
         {/* Task Sections */}
         {sections.map((section, sectionIndex) =>
           section.tasks.length > 0 ? (
