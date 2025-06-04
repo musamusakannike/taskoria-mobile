@@ -1,60 +1,99 @@
-import React from "react"
-import { Text, TouchableOpacity, GestureResponderEvent } from "react-native"
-import { cva, type VariantProps } from "class-variance-authority"
-import { cn } from "@/lib/utils"
+import React from 'react';
+import { TouchableOpacity, Text, ActivityIndicator, ViewStyle, TextStyle } from 'react-native';
 
-const buttonVariants = cva(
-    "flex flex-row items-center justify-center rounded-md text-sm font-medium transition-colors disabled:opacity-50 disabled:pointer-events-none",
-    {
-        variants: {
-            variant: {
-                default: "bg-primary text-primary-foreground",
-                destructive: "bg-red-600 text-white",
-                outline: "border border-gray-300 bg-white text-black",
-                secondary: "bg-secondary text-secondary-foreground",
-                ghost: "bg-transparent text-black",
-                link: "text-blue-600 underline",
-            },
-            size: {
-                default: "h-10 px-4 py-2",
-                sm: "h-9 px-3",
-                lg: "h-11 px-8",
-                icon: "h-10 w-10",
-            },
-        },
-        defaultVariants: {
-            variant: "default",
-            size: "default",
-        },
+interface ButtonProps {
+  onPress?: () => void;
+  children?: React.ReactNode;
+  variant?: 'default' | 'outline' | 'ghost' | 'destructive';
+  size?: 'default' | 'sm' | 'lg' | 'icon';
+  disabled?: boolean;
+  loading?: boolean;
+  className?: string;
+  textClassName?: string;
+  style?: ViewStyle;
+  textStyle?: TextStyle;
+}
+
+export function Button({
+  onPress,
+  children,
+  variant = 'default',
+  size = 'default',
+  disabled = false,
+  loading = false,
+  className = '',
+  textClassName = '',
+  style,
+  textStyle,
+}: ButtonProps) {
+  const getVariantClasses = () => {
+    switch (variant) {
+      case 'outline':
+        return 'border border-gray-300 dark:border-gray-600 bg-transparent';
+      case 'ghost':
+        return 'bg-transparent';
+      case 'destructive':
+        return 'bg-red-500';
+      default:
+        return 'bg-blue-500';
     }
-)
+  };
 
-export interface ButtonProps extends VariantProps<typeof buttonVariants> {
-    onPress?: (event: GestureResponderEvent) => void
-    disabled?: boolean
-    children: React.ReactNode
-    className?: string
-    textClassName?: string
-}
+  const getSizeClasses = () => {
+    switch (size) {
+      case 'sm':
+        return 'px-3 py-2';
+      case 'lg':
+        return 'px-6 py-4';
+      case 'icon':
+        return 'p-2 w-10 h-10';
+      default:
+        return 'px-4 py-3';
+    }
+  };
 
-const Button = ({
-    variant,
-    size,
-    disabled,
-    onPress,
-    children,
-    className,
-    textClassName = "",
-}: ButtonProps) => {
-    return (
-        <TouchableOpacity
-            disabled={disabled}
-            onPress={onPress}
-            className={cn(buttonVariants({ variant, size }), className)}
+  const getTextClasses = () => {
+    const baseClasses = 'font-medium text-center';
+    switch (variant) {
+      case 'outline':
+        return `${baseClasses} text-gray-700 dark:text-gray-300`;
+      case 'ghost':
+        return `${baseClasses} text-gray-700 dark:text-gray-300`;
+      case 'destructive':
+        return `${baseClasses} text-white`;
+      default:
+        return `${baseClasses} text-white`;
+    }
+  };
+
+  return (
+    <TouchableOpacity
+      onPress={onPress}
+      disabled={disabled || loading}
+      className={`
+        ${getVariantClasses()}
+        ${getSizeClasses()}
+        rounded-lg
+        items-center
+        justify-center
+        ${disabled || loading ? 'opacity-50' : ''}
+        ${className}
+      `}
+      style={style}
+    >
+      {loading ? (
+        <ActivityIndicator 
+          size="small" 
+          color={variant === 'outline' || variant === 'ghost' ? '#6B7280' : 'white'} 
+        />
+      ) : (
+        <Text 
+          className={`${getTextClasses()} ${textClassName}`}
+          style={textStyle}
         >
-            <Text className={`text-center ${textClassName}`}>{children}</Text>
-        </TouchableOpacity>
-    )
+          {children}
+        </Text>
+      )}
+    </TouchableOpacity>
+  );
 }
-
-export { Button, buttonVariants }
