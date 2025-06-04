@@ -32,7 +32,7 @@ export function TaskItem({ task, onEdit, onDelete, onToggleStatus }: TaskItemPro
                     bgColor: "bg-amber-50 dark:bg-amber-900/20",
                     textColor: "text-amber-700 dark:text-amber-300",
                     borderColor: "border-amber-200 dark:border-amber-800",
-                    icon: "clock",
+                    icon: "time",
                     iconColor: "#F59E0B"
                 }
             case "low":
@@ -61,7 +61,7 @@ export function TaskItem({ task, onEdit, onDelete, onToggleStatus }: TaskItemPro
                     bgColor: "bg-blue-50 dark:bg-blue-900/20",
                     textColor: "text-blue-700 dark:text-blue-300",
                     borderColor: "border-blue-200 dark:border-blue-800",
-                    icon: "circle",
+                    icon: "ellipse",
                     iconColor: "#3B82F6"
                 }
             case "in-progress":
@@ -85,7 +85,7 @@ export function TaskItem({ task, onEdit, onDelete, onToggleStatus }: TaskItemPro
                     bgColor: "bg-gray-50 dark:bg-gray-800",
                     textColor: "text-gray-700 dark:text-gray-300",
                     borderColor: "border-gray-200 dark:border-gray-700",
-                    icon: "circle",
+                    icon: "ellipse",
                     iconColor: "#6B7280"
                 }
         }

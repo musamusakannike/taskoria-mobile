@@ -137,7 +137,7 @@ export function TaskList({
       >
         {/* Header */}
         <View className="pt-6 pb-4">
-          <Text className="text-3xl font-bold text-gray-900 dark:text-white mb-2">My Tasks</Text>
+          <Text className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Taskoria</Text>
           <Text className="text-gray-600 dark:text-gray-400">
             {tasks.length} {tasks.length === 1 ? "task" : "tasks"} total
           </Text>

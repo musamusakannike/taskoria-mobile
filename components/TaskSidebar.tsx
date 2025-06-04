@@ -307,7 +307,7 @@ export function TaskSidebar({
                                     <Text className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4 uppercase tracking-wide">
                                         Views
                                     </Text>
-                                    <View className="space-y-2">
+                                    <View className="gap-2">
                                         {links.map((link) => (
                                             <TouchableOpacity
                                                 key={link.title}

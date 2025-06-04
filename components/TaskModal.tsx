@@ -295,7 +295,7 @@ export function TaskModal({ task, visible, onClose, onSave, availableTags }: Tas
                 <Text className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 uppercase tracking-wide">
                   Priority Level
                 </Text>
-                <View className="space-y-2">
+                <View className="gap-2">
                   {(["low", "medium", "high"] as TaskPriority[]).map((priority) => {
                     const config = getPriorityConfig(priority)
                     const isSelected = formState.priority === priority
@@ -311,9 +311,8 @@ export function TaskModal({ task, visible, onClose, onSave, availableTags }: Tas
                       >
                         <View className="w-4 h-4 rounded-full mr-3" style={{ backgroundColor: config.color }} />
                         <Text
-                          className={`capitalize font-medium ${
-                            isSelected ? "text-gray-900 dark:text-white" : "text-gray-600 dark:text-gray-400"
-                          }`}
+                          className={`capitalize font-medium ${isSelected ? "text-gray-900 dark:text-white" : "text-gray-600 dark:text-gray-400"
+                            }`}
                         >
                           {priority} Priority
                         </Text>
@@ -347,11 +346,10 @@ export function TaskModal({ task, visible, onClose, onSave, availableTags }: Tas
                       `}
                     >
                       <Text
-                        className={`font-medium ${
-                          formState.status === status
-                            ? "text-blue-700 dark:text-blue-300"
-                            : "text-gray-700 dark:text-gray-300"
-                        }`}
+                        className={`font-medium ${formState.status === status
+                          ? "text-blue-700 dark:text-blue-300"
+                          : "text-gray-700 dark:text-gray-300"
+                          }`}
                       >
                         {status === "todo" ? "To Do" : status === "in-progress" ? "In Progress" : "Completed"}
                       </Text>
@@ -471,23 +469,21 @@ export function TaskModal({ task, visible, onClose, onSave, availableTags }: Tas
 
               {/* Subtasks List */}
               {formState.subtasks.length > 0 && (
-                <View className="space-y-3">
+                <View className="gap-2">
                   {formState.subtasks.map((subtask) => (
                     <View key={subtask.id} className="bg-gray-50 dark:bg-gray-800 p-4 rounded-xl flex-row items-center">
                       <TouchableOpacity
                         onPress={() => handleSubtaskChange(subtask.id, !subtask.completed)}
-                        className={`w-6 h-6 rounded border-2 mr-3 items-center justify-center ${
-                          subtask.completed ? "bg-blue-500 border-blue-500" : "border-gray-300 dark:border-gray-600"
-                        }`}
+                        className={`w-6 h-6 rounded border-2 mr-3 items-center justify-center ${subtask.completed ? "bg-blue-500 border-blue-500" : "border-gray-300 dark:border-gray-600"
+                          }`}
                       >
                         {subtask.completed && <Ionicons name="checkmark" size={16} color="white" />}
                       </TouchableOpacity>
                       <Text
-                        className={`flex-1 ${
-                          subtask.completed
-                            ? "line-through text-gray-500 dark:text-gray-400"
-                            : "text-gray-900 dark:text-white"
-                        }`}
+                        className={`flex-1 ${subtask.completed
+                          ? "line-through text-gray-500 dark:text-gray-400"
+                          : "text-gray-900 dark:text-white"
+                          }`}
                       >
                         {subtask.title}
                       </Text>
