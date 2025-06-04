@@ -5,6 +5,7 @@ import { useTasks } from "@/hooks/useTasks";
 import type { Task } from "@/types/task";
 import React, { useState } from "react";
 import { View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Index() {
   const {
@@ -44,7 +45,7 @@ export default function Index() {
   };
 
   return (
-    <View className="flex-1 bg-white dark:bg-gray-900">
+    <SafeAreaView className="flex-1 bg-white dark:bg-gray-900">
       <TaskSidebar
         filter={filter}
         onFilterChange={setFilter}
@@ -74,6 +75,6 @@ export default function Index() {
         onSave={handleSaveTask}
         availableTags={allTags}
       />
-    </View>
+    </SafeAreaView>
   );
 }

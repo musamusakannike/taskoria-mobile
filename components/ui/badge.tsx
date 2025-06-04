@@ -29,7 +29,7 @@ export function Badge({
             )}
             {...props}
         >
-            <Text className="text-xs font-semibold">{children}</Text>
+            <Text className="text-xs font-semibold dark:text-white">{children}</Text>
         </View>
     )
 }

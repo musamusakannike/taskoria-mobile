@@ -66,7 +66,7 @@ export function TaskItem({ task, onEdit, onDelete, onToggleStatus }: TaskItemPro
                         checked={task.status === 'completed'}
                         onChange={() => onToggleStatus(task.id)}
                     />
-                    <Text className={`text-lg font-medium ${task.status === 'completed' ? 'line-through text-muted-foreground' : ''}`}>
+                    <Text className={`text-lg font-medium dark:text-white ${task.status === 'completed' ? 'line-through text-muted-foreground' : ''}`}>
                         {task.title}
                     </Text>
                 </View>
@@ -81,7 +81,7 @@ export function TaskItem({ task, onEdit, onDelete, onToggleStatus }: TaskItemPro
             </View>
 
             {task.description ? (
-                <Text className="mt-2 text-sm text-muted-foreground">
+                <Text className="mt-2 text-sm text-muted-foreground dark:text-white/80">
                     {task.description}
                 </Text>
             ) : null}
@@ -120,7 +120,7 @@ export function TaskItem({ task, onEdit, onDelete, onToggleStatus }: TaskItemPro
                 </View>
             )}
 
-            <Text className="mt-4 text-xs text-muted-foreground">
+            <Text className="mt-4 text-xs text-muted-foreground dark:text-white/80">
                 Updated {formatDistanceToNow(new Date(task.updatedAt), { addSuffix: true })}
             </Text>
         </View>

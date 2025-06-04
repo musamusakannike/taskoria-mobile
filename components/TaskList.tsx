@@ -48,7 +48,7 @@ export function TaskList({
             {sections.map((section) =>
                 section.tasks.length > 0 ? (
                     <View key={section.title} className="space-y-4">
-                        <Text className="text-lg font-semibold">{section.title}</Text>
+                        <Text className="text-lg font-semibold dark:text-white">{section.title}</Text>
                         <View className="space-y-4">
                             {section.tasks.map((task) => (
                                 <TaskItem

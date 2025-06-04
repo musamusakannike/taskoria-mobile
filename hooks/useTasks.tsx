@@ -3,6 +3,15 @@ import { useEffect, useState } from 'react';
 import Toast from 'react-native-toast-message';
 import { SubTask, Task, TaskFilter, TaskStatus } from '../types/task';
 
+// Custom UUID fallback for React Native Hermes
+function uuidv4() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+    const r = Math.random() * 16 | 0;
+    const v = c === 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+}
+
 export function useTasks() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -56,7 +65,7 @@ export function useTasks() {
   const createTask = (task: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>) => {
     const newTask: Task = {
       ...task,
-      id: crypto.randomUUID(),
+      id: uuidv4(),
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
@@ -123,7 +132,7 @@ export function useTasks() {
   // Add a subtask
   const addSubtask = (taskId: string, title: string) => {
     const newSubtask: SubTask = {
-      id: crypto.randomUUID(),
+      id: uuidv4(),
       title,
       completed: false,
     };
