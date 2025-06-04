@@ -1,133 +1,176 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useEffect, useState } from 'react';
-import Toast from 'react-native-toast-message';
-import { SubTask, Task, TaskFilter, TaskStatus } from '../types/task';
+"use client"
+
+import AsyncStorage from "@react-native-async-storage/async-storage"
+import { useEffect, useState } from "react"
+import Toast from "react-native-toast-message"
+import type { SubTask, Task, TaskFilter, TaskStatus } from "../types/task"
+import {
+  scheduleTaskReminder,
+  cancelTaskReminder,
+  initializeNotifications,
+  handleTaskUpdate,
+} from "@/services/NotificationService"
 
 // Custom UUID fallback for React Native Hermes
 function uuidv4() {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-    const r = Math.random() * 16 | 0;
-    const v = c === 'x' ? r : (r & 0x3 | 0x8);
-    return v.toString(16);
-  });
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0
+    const v = c === "x" ? r : (r & 0x3) | 0x8
+    return v.toString(16)
+  })
 }
 
 export function useTasks() {
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [tasks, setTasks] = useState<Task[]>([])
+  const [isLoading, setIsLoading] = useState(true)
   const [filter, setFilter] = useState<TaskFilter>({
-    search: '',
-    status: 'all',
-    priority: 'all',
+    search: "",
+    status: "all",
+    priority: "all",
     tags: [],
-  });
+  })
+
+  // Initialize notifications when the hook is first used
+  useEffect(() => {
+    initializeNotifications()
+  }, [])
 
   // Load tasks from AsyncStorage on initial render
   useEffect(() => {
     const loadTasks = async () => {
       try {
-        setIsLoading(true);
-        const savedTasks = await AsyncStorage.getItem('tasks');
+        setIsLoading(true)
+        const savedTasks = await AsyncStorage.getItem("tasks")
         if (savedTasks) {
-          setTasks(JSON.parse(savedTasks));
+          setTasks(JSON.parse(savedTasks))
         }
       } catch (error) {
-        console.error('Error loading tasks:', error);
+        console.error("Error loading tasks:", error)
         Toast.show({
-          type: 'error',
-          text1: 'Error loading tasks',
-          text2: 'There was an error loading your tasks.',
-        });
+          type: "error",
+          text1: "Error loading tasks",
+          text2: "There was an error loading your tasks.",
+        })
       } finally {
-        setIsLoading(false);
+        setIsLoading(false)
       }
-    };
+    }
 
-    loadTasks();
-  }, []);
+    loadTasks()
+  }, [])
 
   // Save tasks to AsyncStorage whenever tasks change
   useEffect(() => {
     const saveTasks = async () => {
       if (!isLoading) {
         try {
-          await AsyncStorage.setItem('tasks', JSON.stringify(tasks));
+          await AsyncStorage.setItem("tasks", JSON.stringify(tasks))
         } catch (error) {
-          console.error('Error saving tasks:', error);
+          console.error("Error saving tasks:", error)
         }
       }
-    };
+    }
 
-    saveTasks();
-  }, [tasks, isLoading]);
+    saveTasks()
+  }, [tasks, isLoading])
 
   // Create a new task
-  const createTask = (task: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>) => {
+  const createTask = async (task: Omit<Task, "id" | "createdAt" | "updatedAt">) => {
     const newTask: Task = {
       ...task,
       id: uuidv4(),
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-    };
+    }
 
-    setTasks((prevTasks) => [...prevTasks, newTask]);
+    setTasks((prevTasks) => [...prevTasks, newTask])
+
+    // Schedule notification if task has due date
+    if (newTask.dueDate) {
+      await scheduleTaskReminder(newTask)
+    }
+
     Toast.show({
-      type: 'success',
-      text1: 'Task created',
-      text2: 'Your task has been created successfully.',
-    });
+      type: "success",
+      text1: "Task created",
+      text2: "Your task has been created successfully.",
+    })
 
-    return newTask;
-  };
+    return newTask
+  }
 
   // Update an existing task
-  const updateTask = (id: string, updates: Partial<Omit<Task, 'id' | 'createdAt' | 'updatedAt'>>) => {
+  const updateTask = async (id: string, updates: Partial<Omit<Task, "id" | "createdAt" | "updatedAt">>) => {
+    let updatedTask: Task | undefined
+
     setTasks((prevTasks) =>
-      prevTasks.map((task) =>
-        task.id === id
-          ? { ...task, ...updates, updatedAt: new Date().toISOString() }
-          : task
-      )
-    );
+      prevTasks.map((task) => {
+        if (task.id === id) {
+          updatedTask = {
+            ...task,
+            ...updates,
+            updatedAt: new Date().toISOString(),
+          }
+          return updatedTask
+        }
+        return task
+      }),
+    )
+
+    // Update notification if task has due date or status changed
+    if (updatedTask) {
+      await handleTaskUpdate(updatedTask)
+    }
+
     Toast.show({
-      type: 'success',
-      text1: 'Task updated',
-      text2: 'Your task has been updated successfully.',
-    });
-  };
+      type: "success",
+      text1: "Task updated",
+      text2: "Your task has been updated successfully.",
+    })
+  }
 
   // Delete a task
-  const deleteTask = (id: string) => {
-    setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
+  const deleteTask = async (id: string) => {
+    // Cancel any scheduled notifications for this task
+    await cancelTaskReminder(id)
+
+    setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id))
+
     Toast.show({
-      type: 'success',
-      text1: 'Task deleted',
-      text2: 'Your task has been deleted.',
-    });
-  };
+      type: "success",
+      text1: "Task deleted",
+      text2: "Your task has been deleted.",
+    })
+  }
 
   // Toggle task status
-  const toggleTaskStatus = (id: string) => {
+  const toggleTaskStatus = async (id: string) => {
+    let updatedTask: Task | undefined
+
     setTasks((prevTasks) =>
       prevTasks.map((task) => {
         if (task.id === id) {
           const newStatus: TaskStatus =
-            task.status === 'todo'
-              ? 'in-progress'
-              : task.status === 'in-progress'
-              ? 'completed'
-              : 'todo';
+            task.status === "todo" ? "in-progress" : task.status === "in-progress" ? "completed" : "todo"
 
-          return {
+          updatedTask = {
             ...task,
             status: newStatus,
             updatedAt: new Date().toISOString(),
-          };
+          }
+
+          return updatedTask
         }
-        return task;
-      })
-    );
-  };
+        return task
+      }),
+    )
+
+    // If task is completed, cancel the notification
+    // If task is uncompleted, reschedule the notification
+    if (updatedTask) {
+      await handleTaskUpdate(updatedTask)
+    }
+  }
 
   // Add a subtask
   const addSubtask = (taskId: string, title: string) => {
@@ -135,7 +178,7 @@ export function useTasks() {
       id: uuidv4(),
       title,
       completed: false,
-    };
+    }
 
     setTasks((prevTasks) =>
       prevTasks.map((task) =>
@@ -145,12 +188,12 @@ export function useTasks() {
               subtasks: [...task.subtasks, newSubtask],
               updatedAt: new Date().toISOString(),
             }
-          : task
-      )
-    );
+          : task,
+      ),
+    )
 
-    return newSubtask;
-  };
+    return newSubtask
+  }
 
   // Toggle subtask completion
   const toggleSubtask = (taskId: string, subtaskId: string) => {
@@ -158,20 +201,18 @@ export function useTasks() {
       prevTasks.map((task) => {
         if (task.id === taskId) {
           const updatedSubtasks = task.subtasks.map((subtask) =>
-            subtask.id === subtaskId
-              ? { ...subtask, completed: !subtask.completed }
-              : subtask
-          );
+            subtask.id === subtaskId ? { ...subtask, completed: !subtask.completed } : subtask,
+          )
           return {
             ...task,
             subtasks: updatedSubtasks,
             updatedAt: new Date().toISOString(),
-          };
+          }
         }
-        return task;
-      })
-    );
-  };
+        return task
+      }),
+    )
+  }
 
   // Delete subtask
   const deleteSubtask = (taskId: string, subtaskId: string) => {
@@ -182,40 +223,39 @@ export function useTasks() {
             ...task,
             subtasks: task.subtasks.filter((subtask) => subtask.id !== subtaskId),
             updatedAt: new Date().toISOString(),
-          };
+          }
         }
-        return task;
-      })
-    );
-  };
+        return task
+      }),
+    )
+  }
 
   // Filter tasks
   const filteredTasks = tasks.filter((task) => {
     // Filter by search text
-    const matchesSearch =
-      filter.search
-        ? task.title.toLowerCase().includes(filter.search.toLowerCase()) ||
-          task.description.toLowerCase().includes(filter.search.toLowerCase())
-        : true;
+    const matchesSearch = filter.search
+      ? task.title.toLowerCase().includes(filter.search.toLowerCase()) ||
+        task.description.toLowerCase().includes(filter.search.toLowerCase())
+      : true
 
     // Filter by status
-    const matchesStatus = filter.status === 'all' || task.status === filter.status;
+    const matchesStatus = filter.status === "all" || task.status === filter.status
 
     // Filter by priority
-    const matchesPriority = filter.priority === 'all' || task.priority === filter.priority;
+    const matchesPriority = filter.priority === "all" || task.priority === filter.priority
 
     // Filter by tags
-    const matchesTags =
-      filter.tags.length === 0 || filter.tags.some((tag) => task.tags.includes(tag));
+    const matchesTags = filter.tags.length === 0 || filter.tags.some((tag) => task.tags.includes(tag))
 
-    return matchesSearch && matchesStatus && matchesPriority && matchesTags;
-  });
+    return matchesSearch && matchesStatus && matchesPriority && matchesTags
+  })
 
   // Get all tags
-  const allTags = Array.from(new Set(tasks.flatMap((task) => task.tags))).sort();
+  const allTags = Array.from(new Set(tasks.flatMap((task) => task.tags))).sort()
 
   return {
     tasks: filteredTasks,
+    allTasks: tasks,
     isLoading,
     filter,
     setFilter,
@@ -227,5 +267,5 @@ export function useTasks() {
     toggleSubtask,
     deleteSubtask,
     allTags,
-  };
+  }
 }

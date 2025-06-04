@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "taskoria",
+    "name": "Taskoria",
     "slug": "taskoria",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -32,6 +32,14 @@
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/icon.png",
+          "color": "#3B82F6",
+          "sounds": ["./assets/audio/notification-sound.wav"]
         }
       ]
     ],
