@@ -16,7 +16,8 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.musamusakannike.taskoria"
     },
     "web": {
       "bundler": "metro",
@@ -39,12 +40,20 @@
         {
           "icon": "./assets/images/icon.png",
           "color": "#3B82F6",
-          "sounds": ["./assets/audio/notification-sound.wav"]
+          "sounds": [
+            "./assets/audio/notificationsound.wav"
+          ]
         }
       ]
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "ef12beda-f08d-495d-b20d-4216072c7fbd"
+      }
     }
   }
 }
